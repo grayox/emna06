@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="moment-js.html">
 
-<dom-module id="expenses-list">
+<dom-module id="items-list">
   <template>
     <style>
       :host {
@@ -40,22 +40,22 @@
         }
       }
 
-      #expenses {
+      #items {
         flex: 1;
         color: var(--primary-text-color);
       }
 
       @media (max-width: 1124px) {
-        #expenses {
+        #items {
           font-size: 15px;
         }
       }
 
-      #expenses /deep/ thead.vaadin-grid-header {
+      #items /deep/ thead.vaadin-grid-header {
         box-shadow: 0 -9px 2px 10px rgba(0, 0, 0, 0.1), 0 -8px 3px 10px rgba(204, 204, 204, 0.20);
       }
 
-      #expenses /deep/ thead.vaadin-grid-header th {
+      #items /deep/ thead.vaadin-grid-header th {
         text-transform: uppercase;
         font-size: 12px;
         font-weight: 500;
@@ -90,7 +90,7 @@
         box-sizing: border-box;
       }
 
-      #expenses /deep/ .vaadin-grid-header [class*="sort-"]:after {
+      #items /deep/ .vaadin-grid-header [class*="sort-"]:after {
         content: "";
         border-width: 5px;
         border-style: solid;
@@ -101,55 +101,63 @@
         margin: 0 10px;
       }
 
-      #expenses /deep/ .vaadin-grid-header.vaadin-grid .sort-desc.vaadin-grid:after {
+      #items /deep/ .vaadin-grid-header.vaadin-grid .sort-desc.vaadin-grid:after {
         border-top-color: var(--accent-color);
         transform: translateY(25%);
       }
 
-      #expenses /deep/ .vaadin-grid-header.vaadin-grid .sort-asc.vaadin-grid:after {
+      #items /deep/ .vaadin-grid-header.vaadin-grid .sort-asc.vaadin-grid:after {
         border-bottom-color: var(--accent-color);
         transform: translateY(-25%);
       }
     </style>
 
 
-    <vaadin-grid id="expenses" frozen-columns="1">
+    <vaadin-grid id="items" frozen-columns="2">
       <table>
         <colgroup>
-          <col name="date" width="120" sortable sort-direction="desc" />
-          <col name="merchant" flex="1" min-width="145" sortable/>
-          <col name="total" width="90" sortable/>
-          <col name="status" width="120" sortable/>
-          <col name="comment" flex="2" min-width="260" sortable/>
+					<!---->
+          <col sortable name="date"  width="120" sort-direction="desc"       />
+					<!--- ->
+          <col sortable name="week"  flex="1" xmin-width="145"               />
+					<!--- ->
+          <col sortable name="price" flex="1" xmin-width="145"               />
+					<!---->
+          <col sortable name="home"  flex="1" xwidth="90"                    />
+					<!---->
+          <col sortable name="away"  flex="1" xwidth="120"                   />
+					<!--- ->
+          <col sortable name="price" flex="1" xmin-width="260"               />
+					<!---->
         </colgroup>
       </table>
     </vaadin-grid>
-    <paper-fab icon="add" on-tap="_showExpenseEditor" id="add-button"></paper-fab>
+    <paper-fab icon="add" on-tap="_showItemEditor" id="add-button"></paper-fab>
   </template>
   <script>
     (function() {
       'use strict';
 
       Polymer({
-        is: 'expenses-list',
+        is: 'items-list',
 
         properties: {
-          expenses: Array,
+          items: Array,
           sortColumn: String,
           sortDirection: String,
           filters: Object
         },
 
         observers: [
-          '_update(filters, expenses)',
+          '_update(filters, items)',
           '_filtersChanged(filters.*)',
-          '_update(expenses.*)',
+          '_update(items.*)',
           '_update(sortColumn)',
           '_update(sortDirection)'
         ],
 
         ready: function() {
-          var grid = this.$.expenses;
+          var grid = this.$.items;
 
           grid.addEventListener('sort-order-changed', function() {
             if (grid.size > 0) {
@@ -162,7 +170,7 @@
             var selection = grid.selection.selected();
             if (selection.length === 1) {
               grid.getItem(selection[0], function(err, item) {
-                this.fire('edit-expense', item);
+                this.fire('item-edit', item);
               }.bind(this));
             }
           }.bind(this));
@@ -178,12 +186,16 @@
           };
 
           grid.then(function() {
+						// Date (mm/dd/yyyy)
             grid.columns[0].renderer = function(cell) {
               cell.element.innerHTML = moment(cell.data).format('MM/DD/YYYY');
             };
+						/** /
+						// Money ($)
             grid.columns[2].renderer = function(cell) {
               cell.element.innerHTML = '$' + cell.data.toFixed(2);
             };
+						// Status (all caps)
             grid.columns[3].renderer = function(cell) {
               var status = cell.data.replace(/_/g, ' ');
               status = status.charAt(0).toUpperCase() + status.slice(1);
@@ -191,15 +203,16 @@
             };
 
             grid.header.getCell(0, 2).className = 'total';
+						/**/
           });
         },
 
-        _showExpenseEditor: function() {
-          this.fire('edit-expense', {});
+        _showItemEditor: function() {
+          this.fire('item-edit', {});
         },
 
         _filtersChanged: function() {
-          if (this.$.expenses.items) {
+          if (this.$.items.items) {
             this.debounce('_filtersChanged', function() {
               this._update();
             }, 300);
@@ -210,8 +223,8 @@
           if (!this.filters) {
             return;
           }
-          var grid = this.$.expenses;
-          var merchant = this.filters.merchant;
+          var grid = this.$.items;
+          //var merchant = this.filters.merchant;
           var min = this.filters.min;
           var max = this.filters.max;
           var status = this.filters.status;
@@ -225,40 +238,42 @@
           }
 
           // Filter
-          var result = this.expenses
-            .filter(function(expense) {
-              return !(merchant && expense.merchant
+          var result = this.items;
+					/** /
+            .filter(function(item) {
+              return !(merchant && item.merchant
                 .toUpperCase().indexOf(merchant.toUpperCase()) < 0);
             })
-            .filter(function(expense) {
-              return !(min && expense.total < min);
+            .filter(function(item) {
+              return !(min && item.total < min);
             })
-            .filter(function(expense) {
-              return !(max && expense.total > max);
+            .filter(function(item) {
+              return !(max && item.total > max);
             })
-            .filter(function(expense) {
+            .filter(function(item) {
               if (status && status.length > 0) {
-                return status.indexOf(expense.status) >= 0;
+                return status.indexOf(item.status) >= 0;
               } else {
                 return false;
               }
             })
-            .filter(function(expense) {
+            .filter(function(item) {
               if (start) {
                 var startDate = moment(start);
-                return !!(startDate.isValid() && moment(expense.date).isAfter(startDate));
+                return !!(startDate.isValid() && moment(item.date).isAfter(startDate));
               } else {
                 return true;
               }
             })
-            .filter(function(expense) {
+            .filter(function(item) {
               if (end) {
                 var endDate = moment(end);
-                return !!(endDate.isValid() && moment(expense.date).isBefore(endDate));
+                return !!(endDate.isValid() && moment(item.date).isBefore(endDate));
               } else {
                 return true;
               }
             });
+					/**/
 
           // Sort
           if (sort) {

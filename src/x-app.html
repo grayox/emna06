@@ -1,7 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="login-page.html">
-<dom-module id="expense-app">
+
+<!-- Edit -->
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<!-- endEdit -->
+
+<dom-module id="x-app">
   <template>
     <style>
       :host {
@@ -65,10 +70,39 @@
       }
     </style>
 
-    <iron-pages id="pages" selected="[[selected]]">
-      <login-page id="login" logged-in="{{loggedIn}}"></login-page>
-      <overview-page id="overview" logged-in="{{loggedIn}}"></overview-page>
+		<!-- Edit -->
+		<firebase-app name="app"
+									auth-domain="green-comet.firebaseapp.com"
+									database-url="https://green-comet.firebaseio.com/"
+									api-key="AIzaSyBOqawzjd994lNbsCTb6hzDZ7wI7yFNw5o"
+									>
+		</firebase-app>
+		<!---->
+		<firebase-auth id="auth"
+									 app-name="app"
+									 user="{{user}}"
+									 provider="[[provider]]"
+                   signed-in="{{loggedIn}}"
+									 on-error="handleError"
+									 >
+		</firebase-auth>
+		<!-- endEdit -->
+		
+		<!---->
+    <iron-pages id="pages"
+								selected="[[selected]]"
+								>
+      <login-page id="login"
+									logged-in="{{loggedIn}}"
+									>
+			</login-page>
+      <overview-page id="overview"
+										 user="{{user}}"
+										 logged-in="{{loggedIn}}"
+										 >
+			</overview-page>
     </iron-pages>
+		<!---->
 
   </template>
 
@@ -77,7 +111,7 @@
       'use strict';
 
       Polymer({
-        is: 'expense-app',
+        is: 'x-app',
         properties: {
           loggedIn: {
             type: Boolean,
@@ -88,7 +122,13 @@
           selected: {
             type: Number,
             notify: true
-          }
+          },
+					// Edit
+					user: {
+            type: Object,
+            notify: true,
+          },
+					// endEdit
         },
 
         ready: function() {
@@ -101,7 +141,47 @@
 
         _selectPage: function() {
           this.selected = this.loggedIn ? 1 : 0;
-        }
+        },
+        
+				// Edit				
+				listeners: {
+          'login'   : '_login'  ,
+          'logout'  : '_logout' ,
+        },
+				
+				_login: function(e) {
+					var provider = e.detail;
+					var auth = this.$.auth;
+					var _this = this;
+					auth.signInWithPopup(provider)
+		          .then(function(response) {
+						    //console.log('response', response);
+						    //console.log('loggedIn', auth.signedIn);
+					      //_this.set('loggedIn', auth.signedIn);
+					      //console.log('user', auth.user);
+					      //console.log('user', _this.user);
+					    })
+              .catch(function(error) {
+						    console.log('error', error);
+					    });
+				},
+				
+				_logout: function(e) {
+					var auth = this.$.auth;
+					var _this = this;
+					auth.signOut()
+		          .then(function(response) {
+						    //console.log('auth.signedIn', auth.signedIn);
+						    //console.log('loggedIn', _this.loggedIn);
+					      //_this.set('loggedIn', auth.signedIn);
+						    //_this.set('loggedIn', false);
+					    })
+              .catch(function(error) {
+						    console.log('error', error);
+					    });
+				},
+				// endEdit
+				
       });
     })();
   </script>

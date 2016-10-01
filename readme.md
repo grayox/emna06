@@ -1,3 +1,27 @@
+v05.
+1. Checkout (`git clone` + `bower install`) Vaadin/expense-manager-demo.
+2. Incrementally & surgically add polymerfire elements to achieve minimum threshhold functionality.
+3. Iterate improvements incrementally.
+4. bower.json append:
+	  "paper-tooltip": "PolymerElements/paper-tooltip#^1.1.2",
+    "polymerfire": "firebase/polymerfire#^0.9.5",
+    "app-storage": "PolymerElements/app-storage#^0.9.4"
+		To add:
+			PolymerElements/paper-dropdown-menu
+			PolymerElements/paper-listbox
+			PolymerElements/paper-item
+			Saulis/iron-data-table
+			PolymerElements/paper-tooltip
+			PolymerElements/paper-menu
+			PolymerElements/iron-flex-layout
+			PolymerElements/neon-animation/animations/scale-up-animation
+5. Basic CRUD functionality!
+6. v06. TODO:
+   a. Add local storage
+	 b. Remove/replace Vaadin charts
+	 c. Add multiple views: main (shared, collective) lists, private (individual) lists
+	 d. Reflect those lists in object store data structure models/nodes
+
 # Progressive Web App with full offline capabilities
 
 This is an example project for how you can build a [Progressive Web Application](https://infrequently.org/2015/06/progressive-apps-escaping-tabs-without-losing-our-soul/) with [Polymer](https://www.polymer-project.org/1.0/), [PouchDB](https://pouchdb.com/) and [Vaadin Elements](https://vaadin.com/elements).

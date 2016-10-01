@@ -1,0 +1,200 @@
+<!-- Uses <iron-data-table> -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<!--- ->
+Replaced <vaadin-grid> (https://github.com/vaadin/vaadin-grid)
+with <iron-data-table> (https://github.com/Saulis/iron-data-table)
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<!---->
+<link rel="import" href="../bower_components/iron-data-table/iron-data-table.html">
+<link rel="import" href="../bower_components/iron-data-table/default-styles.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="moment-js.html">
+
+<link rel="import" href="custom/row-detail.html">
+
+<!-- Edit -->
+<link rel="import" href="custom/styles/grid-1.html">
+<!-- endEdit -->
+
+<!--- ->
+Examples: http://jsbin.com/xxxxxxxxxx/1/edit?html,output
+          torizajafe ... Hello world
+          yexokijavo ... CSS import
+          fanotababa ... Row details
+          boxiyafoya ... Edit row details
+          sevafikolu ... Edit row details using sub-element
+          zukahavoto ... Reset selection 01
+          ducayiwake ... Reset selection 02
+          xucemijada ... Reset selection 03 http://stackoverflow.com/q/38707525/1640892
+          dubuyoy    ... Reset selection 04 http://stackoverflow.com/a/38712926/1640892
+          fewihuxozu ... Select row, prevent deselection | Clone for documentation purposes
+<!---->
+
+<dom-module id="items-list">
+  <template>
+		<style include="grid-1"></style><!-- Alternate styling based on: https://saulis.github.io/iron-data-table/demo/styling.html -->
+    <style>
+      :host {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+      }
+
+      #add-button {
+        position: absolute;
+        right: 32px;
+        bottom: 32px;
+        z-index: 2;
+      }
+
+      @media (max-width: 1124px) {
+        #add-button {
+          bottom: -28px;
+        }
+      }
+
+      @media (min-width: 1125px) {
+        #add-button {
+          bottom: auto;
+          top: -29px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        #add-button {
+          bottom: 32px;
+        }
+      }
+
+      #items {
+        flex: 1;
+        color: var(--primary-text-color);
+      }
+
+      @media (max-width: 1124px) {
+        #items {
+          font-size: 15px;
+        }
+      }
+    </style>
+    <style>
+      iron-data-table data-table-row-detail {
+        height: 150px;
+      }
+      iron-data-table data-table-row-detail .detail {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: 2px solid #aaa;
+      }
+    </style>
+
+
+		<iron-data-table id="grid1"
+										 items="[[items]]"
+										 xdetails-enabled
+										 selection-enabled
+										 selected-item="{{selectedItem}}"
+										 on-deselecting-item="_deselecting"
+										 >
+			<!--- ->
+			<template is="row-detail">
+				<div class="detail">
+					<row-detail item="{{item}}"
+											tabindex="0"
+											>
+					</row-detail><!-- tabindex="0" is required workaround per http://stackoverflow.com/a/38693110/1640892 - ->
+				</div>
+			</template>
+			<!---->
+			
+			<data-table-column name="Date"
+												 xwidth="50px"
+												 xflex="0"
+												 filter-by="date"
+												 sort-by="date"
+												 >
+				<template>[[item.date]]</template>
+			</data-table-column>
+			<data-table-column name="Away"
+												 filter-by="away"
+												 sort-by="away"
+												 >
+				<template>[[item.away]]</template>
+			</data-table-column>
+			<data-table-column name="Home"
+												 filter-by="home"
+												 sort-by="home"
+												 >
+				<template>[[item.home]]</template>
+			</data-table-column>
+		</iron-data-table>
+		<!---->
+    <paper-fab icon="add"
+							 id="add-button"
+							 on-tap="_showItemEditor"
+							 xon-tap="show">
+		</paper-fab>
+		<!---->
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'items-list',
+				properties: {
+          items: Array,
+          filters: Object,
+          selectedItem: {
+						type: Object,
+						notifies: true,
+					},
+          sortColumn: String,
+          sortDirection: String,
+				},
+				
+				/**/
+				observers: [
+          '_selectedItemChanged(selectedItem)' ,
+				],
+				/**/
+				
+        _deselecting: function(e) {
+          e.preventDefault();
+					this._selectedItemChanged(e.detail.item);
+        },
+
+				_selectedItemChanged: function(ob) {
+					//console.log('selectedItem', ob);
+					this.fire('item-edit', ob);
+				},
+
+				/**/
+				
+        _showItemEditor: function() {
+          this.fire('item-edit', {}/*this.selectedItem*/);
+        },
+				
+				reset: function() {
+					this.set('selectedItem', null);
+				},
+
+				_computeSelectedStr: function(ob) {
+				  return JSON.stringify(ob);
+        },
+
+				show: function() {
+					console.log('selectedItem', this.selectedItem);
+				},
+
+				
+      });
+    })();
+  </script>
+</dom-module>

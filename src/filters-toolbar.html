@@ -5,6 +5,7 @@
 <dom-module id="filters-toolbar">
   <template>
     <style>
+			/**/
       :host {
         display: flex;
         position: relative;
@@ -14,6 +15,7 @@
         -ms-user-select: none;
         user-select: none;
       }
+			/**/
 
       #filters {
         flex: 1;
@@ -211,7 +213,7 @@
       is: 'filters-toolbar',
       properties: {
         filters: Object,
-        expenses: Array,
+        items: Array,
         totalOwed: Number,
         merchants: Array,
         expanded: {

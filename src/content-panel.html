@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="history-panel.html">
-<link rel="import" href="expenses-list.html">
+<link rel="import" href="items-list.html">
 <dom-module id="content-panel">
   <template>
     <style>
@@ -54,14 +54,14 @@
         }
       }
     </style>
-    <expenses-list id="list" expenses="[[expenses]]" filters="[[filters]]"></expenses-list>
-    <history-panel id="history-panel" total-owed="[[totalOwed]]" expenses="[[expenses]]"></history-panel>
+    <items-list id="list" items="[[items]]" filters="[[filters]]"></items-list>
+    <history-panel id="history-panel" total-owed="[[totalOwed]]" items="[[items]]"></history-panel>
   </template>
   <script>
     Polymer({
       is: 'content-panel',
       properties: {
-        expenses: Array,
+        items: Array,
         totalOwed: Number,
         filters: Object
       }

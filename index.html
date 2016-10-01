@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
 
-  <title>Expense Manager</title>
+  <title>SportsBall</title>
 
   <link rel="shortcut icon" sizes="32x32" href="images/app-icon-32.png">
 
@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="images/app-icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <meta name="apple-mobile-web-app-title" content="Expense Manager">
+  <meta name="apple-mobile-web-app-title" content="SportsBall">
 
   <script type="text/javascript">
     // HTTPS redirect is borrowed from
@@ -44,7 +44,7 @@
     };
   </script>
 
-  <link id="bundle" rel="import" href="src/expense-app.html" async>
+  <link id="bundle" rel="import" href="src/x-app.html" async>
 
   <style>
     html {
@@ -108,11 +108,11 @@
       animation-name: none;
     }
 
-    .loading expense-app {
+    .loading x-app {
       opacity: 0;
     }
 
-    .ready expense-app {
+    .ready x-app {
       animation: fade-in 0.25s;
     }
 
@@ -130,7 +130,7 @@
     <div class="spinner"></div>
   </div>
 
-  <expense-app></expense-app>
+  <x-app></x-app>
 
   <script>
     function registerServiceWorker() {

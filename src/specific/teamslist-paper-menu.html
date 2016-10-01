@@ -1,0 +1,73 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="teamsdata-nfl.html">
+
+<dom-module id="teamslist-paper-menu">
+
+  <template>
+		<style></style>
+		<!---->
+		<teamsdata-nfl teams="{{items}}"></teamsdata-nfl>
+		<!---->
+		<paper-dropdown-menu label="{{label}}"
+												 value="{{selected}}"
+												 selectedItemLabel="{{selected}}"
+												 required
+												 >
+			<paper-listbox class="dropdown-content"
+										 selected="{{selected}}"
+										 attr-for-selected="data-item"
+										 >
+				<!--- ->
+				<paper-item data-item="DAL">DAL</paper-item>
+				<paper-item data-item="DEN">DEN</paper-item>
+				<paper-item data-item="PIT">PIT</paper-item>
+				<paper-item data-item="SEA">SEA</paper-item>
+				<paper-item data-item="CAR">CAR</paper-item>
+				<!---->
+        <template is="dom-repeat" items="{{items}}">
+				  <!--- ->
+         	<paper-item data-item="{{item}}">{{item}}</paper-item>
+				  <!--- ->
+         	<paper-item data-item="{{item.abbr}}">{{item.abbr}}</paper-item>
+				  <!--- ->
+         	<paper-item data-item="{{item.short}}">{{item.long}}</paper-item>
+         	<!---->
+         	<paper-item data-item="{{item.long}}">{{item.long}}</paper-item>
+				  <!---->
+        </template>
+				<!---->
+			</paper-listbox>
+		</paper-dropdown-menu>
+		<!---->
+  </template>
+
+  <script>
+    Polymer({
+      is: "teamslist-paper-menu",
+      properties: {
+        label: String,
+				selected: {
+					type: String,
+					notify: true,
+				},
+				required: {
+				  type: Boolean,
+          value: false,
+				},
+				items: {
+					type: Array,
+					notify: true,
+				},
+      },
+			/** /
+			attached: function() {
+				console.log('items', this.items);
+			},
+			/**/
+    });
+  </script>
+</dom-module>

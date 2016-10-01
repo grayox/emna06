@@ -18,23 +18,6 @@
 <!-- Edit -->
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="custom/toolbar-panel.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-layout/app-layout.html">
-
-<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
-<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-route/app-location.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <!-- endEdit -->
 
 <dom-module id="overview-page">
@@ -126,40 +109,6 @@
         }
       }
     </style>
-		<!-- Edit -->
-		<style>
-			.drawerMenuButton {
-				/** /
-				color: var(--icon-color, --paper-orange-500); Removed default because icons might handle change of background
-				/**/
-				color: var(--icon-color, white);
-				cursor: pointer;
-				-moz-transition:    .5s;
-				-webkit-transition: .5s;
-				-o-transition:      .5s;
-				transition:         .5s;
-			}
-			.drawerMenuButton:hover {
-				color: var(--icon-color-hover, --paper-grey-500);
-			}
-		</style>
-		<style>
-			app-header {
-				padding: 0 24px;
-				color: white;
-				background-color: black;/*var(--dark-primary-color);*/
-				/** /
-				--app-header-background-rear-layer: {
-					/* The header is blue when condensed * /
-					background-color: blue;
-				};
-				/**/
-			}
-			.content {
-				display: flex;
-			}
-		</style>
-		<!-- endEdit -->
 		
 		<!-- Edit -->
     <firebase-document id="document"
@@ -186,149 +135,21 @@
 		</app-location>
     <app-route route="{{route}}"
 							 pattern="/:dbId"
-               data="{{routeData}}"
-							 tail="{{subroute}}"
-							 >
-		</app-route>
-		<!--- ->
-    * The above <app-route> element uses the correct pattern ("/:dbId") necessary to delete records from the database.
-    * Replacing that pattern with the "/:page" pattern below results in a malfunction of the delete() method.
-    * The malfunction behaves by appearing to delete the record from the client side table.
-    * But the server-side data remains unaffected. The "/:page" pattern might be useful for routing page views?
-		<!--- ->
-		<app-route route="{{route}}"
-							 pattern="/:page"
 							 data="{{routeData}}"
 							 tail="{{subroute}}"
 							 >
 		</app-route>
-		<!--- ->
+    <!--- ->
     <iron-ajax id="ajax" handle-as="json" on-response="_handleBackendResponse" on-error="_handleBackendError"></iron-ajax>
     <!---->
-    <info-dialog id="info"></info-dialog>
-    <paper-toast id="toast"></paper-toast>
-    <iron-localstorage name="item-manager-db-id"
-											 value="{{dbId}}"
-											 >
-		</iron-localstorage>
-    <item-editor id="itemEditor"
-								 xmerchants="[[merchants]]"
-								 db="[[_db]]"
-								 route="{{subroute}}"
-								 xitem="{{editableItem}}"
-								 >
-		</item-editor>
-		
-		<!--- ->
-		<app-drawer-layout fullbleed force-narrow>
-			<app-drawer transition-duration="400">
-				drawer-content
-			</app-drawer>
-			<app-header-layout>
-				<app-header>
-					<app-toolbar>
-						<paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-						<div main-title>App name</div>
-					</app-toolbar>
-				</app-header>
-				<div xclass="content">
-				  main content
-				</div>
-			</app-header-layout>
-		</app-drawer-layout>
-		
-	  <!--- ->
-		<app-drawer-layout fullbleed force-narrow>
-			<app-drawer id="startDrawer"
-									align="start"
-									transition-duration="500"
-									>
-				<!---- >
-				<app-toolbar>Menu</app-toolbar>
-				<iron-selector selected="[[page]]"
-											 attr-for-selected="name"
-											 class="drawer-list"
-											 role="navigation"
-											 >
-					<a name="view1" href="/view1">View One</a>
-					<a name="view2" href="/view2">View Two</a>
-					<a name="view3" href="/view3">View Three</a>
-				</iron-selector>
-				<!---- >
-			</app-drawer>
-			<app-header-layout>
-				<app-header>
-					<app-toolbar>
-						<paper-icon-button class="drawerMenuButton"
-															 icon="menu"
-															 drawer-toggle
-															 >
-						</paper-icon-button>
-						<div main-title
-								 class="drawerMenuButton"
-								 >
-							SportsBall
-						</div>
-						<img src="../images/app-icon-32.png" />
-						<!--- ->
-						<iron-icon id="sync" icon="notification:sync" hidden$="[[_hideSyncIcon(status)]]" title="Syncing…"></iron-icon>
-						<!---- >
-						<span class="flex"></span>
-						<!--- ->
-						<paper-button on-tap="_openInfoWindow" class="about-button">Info</paper-button>
-						<paper-button on-tap="_logout" class="logout-button">Logout</paper-button>
-						<!---->
-						<!-- Edit -- >
-						<toolbar-panel user="[[user]]"
-													 on-logout="_logout"
-													 on-info="_openInfoWindow"
-													 on-account="_openInfoWindow"
-													 on-settings="_openInfoWindow"
-													 >
-						</toolbar-panel>
-						<!-- endEdit -- >
-					</app-toolbar>
-				</app-header>
 
-				<!-- Main Content -- >
-				<div class="content">
-					<filters-toolbar id="filters-toolbar"
-													 total-owed="[[totalOwed]]"
-													 merchants="[[merchants]]"
-													 filters="{{filters}}"
-													 items="[[items]]"
-													 >
-					</filters-toolbar>
-					<content-panel id="content-panel"
-												 filters="{{filters}}"
-												 total-owed="[[totalOwed]]"
-												 items="[[items]]"
-												 >
-					</content-panel>
-				</div>
-				<!-- End Main Content -- >
-
-			</app-header-layout>
-		</app-drawer-layout>
-		<!---->
-		
-
-		<!---->
     <paper-header-panel>
       <paper-toolbar>
-				<paper-icon-button class="drawerMenuButton"
-													 icon="menu"
-													 on-tap="toggleLeft"
-													 >
-				</paper-icon-button>
-				<h1 class="drawerMenuButton" on-tap="toggleLeft">
-					SportsBall
-				  <img src="../images/app-icon-32.png" />
-				</h1>
-				<!--- ->
+        <h1>SportsBall</h1>        
+       	<!--- ->
 				<iron-icon id="sync" icon="notification:sync" hidden$="[[_hideSyncIcon(status)]]" title="Syncing…"></iron-icon>
-				<!---->
-				<span class="flex"></span>
+       	<!---->
+        <span class="flex"></span>
        	<!--- ->
         <paper-button on-tap="_openInfoWindow" class="about-button">Info</paper-button>
         <paper-button on-tap="_logout" class="logout-button">Logout</paper-button>
@@ -360,9 +181,19 @@
 											 >
 				</content-panel>
       </div>
-    </paper-header-panel>
-    <!---->
 
+    </paper-header-panel>
+
+    <item-editor id="itemEditor"
+								 xmerchants="[[merchants]]"
+								 db="[[_db]]"
+								 route="{{subroute}}"
+								 xitem="{{editableItem}}"
+								 >
+		</item-editor>
+    <paper-toast id="toast"></paper-toast>
+    <info-dialog id="info"></info-dialog>
+    <iron-localstorage name="item-manager-db-id" value="{{dbId}}"></iron-localstorage>
   </template>
 
   <script>
@@ -564,11 +395,6 @@
 						this.set('editableItemId', null);
 					}
 				},
-				/** /
-				toggleLeft: function() {
-					this.$.startDrawer.toggle();
-				},
-				/**/
 				// endEdit
 				
         _itemSave: function(e) {

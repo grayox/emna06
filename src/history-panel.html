@@ -84,6 +84,7 @@
     <div id="container">
 
       <div class="chart">
+				<!--- ->
         <h2 class="chart-title section-title">Last 12 Months in Total</h2>
         <vaadin-bar-chart id="barchart">
           <title>
@@ -110,10 +111,12 @@
           </data-series>
           <legend enabled="false"></legend>
         </vaadin-bar-chart>
+				<!---->
 
         <div id="horizontal">
           <div>
             <h2 class="chart-title section-title">Last 12 Months in Total</h2>
+						<!--- ->
             <vaadin-column-chart id="columnchart">
               <title>
                 <style display="none"></style>
@@ -139,6 +142,7 @@
               </data-series>
               <legend enabled="false"></legend>
             </vaadin-column-chart>
+						<!---->
           </div>
           <div id="total">
             <span>To be reimbursed</span>
@@ -155,7 +159,7 @@
         is: 'history-panel',
 
         properties: {
-          expenses: Array,
+          items: Array,
           seriesData: {
             type: Array,
             notify: true
@@ -163,11 +167,11 @@
         },
 
         observers: [
-          'update(expenses.*)'
+          'update(items.*)'
         ],
 
         update: function() {
-          var expenses = this.expenses;
+          var items = this.items;
 
           function findMonth(rawDate, history) {
             var date = moment(rawDate);
@@ -199,22 +203,24 @@
           var history = [];
           var oneYearAgo = moment().subtract(1, 'years');
 
-          expenses.filter(function(expense) {
-            return moment(expense.date).isAfter(oneYearAgo);
-          }).forEach(function(expense) {
-            findMonth(expense.date, history).total += expense.total;
+          items.filter(function(item) {
+            return moment(item.date).isAfter(oneYearAgo);
+          }).forEach(function(item) {
+            findMonth(item.date, history).total += item.total;
           });
 
           this.seriesData = history.map(function(month) {
             return month.total;
           });
 
+					/** /
           this.async(function() {
             this.$.barchart.chart.xAxis[0].setCategories(history.map(getHistoryLabel));
             this.$.barchart.chart.reflow();
             this.$.columnchart.chart.xAxis[0].setCategories(history.map(getHistoryLabel));
             this.$.columnchart.chart.reflow();
           }, 50);
+					/**/
 
         }
 
